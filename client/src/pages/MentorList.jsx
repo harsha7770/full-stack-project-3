@@ -25,7 +25,8 @@ const MentorList = () => {
     time: '',
     duration: '30',
     mode: 'Virtual',
-    meetingLink: 'https://meet.google.com/abc-defg-hij'
+    meetingLink: 'https://meet.google.com/abc-defg-hij',
+    selectedTargetMenteeId: '' // For admin manual matching
   });
 
   useEffect(() => {
@@ -97,8 +98,21 @@ const MentorList = () => {
       };
       
       if(role === 'admin') {
-         alert('Admin manual match function demo. Target ID: ' + selectedMentor.id);
-         setActionLoading(false);
+         const { selectedTargetMenteeId } = formData;
+         const adminPayload = {
+            mentorId: selectedMentor.role === 'mentor' ? selectedMentor.id : null,
+            menteeId: selectedTargetMenteeId || (selectedMentor.role === 'mentee' ? selectedMentor.id : null)
+         };
+         
+         if(!adminPayload.mentorId || !adminPayload.menteeId) {
+            alert('Admin: Please select both a mentor and a mentee.');
+            setActionLoading(false);
+            return;
+         }
+         
+         await axios.post(api.match, adminPayload);
+         alert('Relationship manually established by Admin.');
+         closeConnectModal();
          return;
       }
 
@@ -267,7 +281,9 @@ const MentorList = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <form onSubmit={handleConnectSubmit} className="md:col-span-2 space-y-6">
                   <div>
-                    <label className="block text-sm font-semibold text-textMuted mb-2">Select Mentor</label>
+                    <label className="block text-sm font-semibold text-textMuted mb-2">
+                       {role === 'admin' ? (selectedMentor?.role === 'mentor' ? 'Confirm Mentor' : 'Assign to Mentor') : 'Select Mentor'}
+                    </label>
                     <div className="relative">
                       <Users className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-textMuted" />
                       <select 
@@ -275,12 +291,34 @@ const MentorList = () => {
                         value={selectedMentor?.id}
                         onChange={(e) => setSelectedMentor(users.find(u => u.id === parseInt(e.target.value)))}
                       >
+                         <option value="" disabled>Select User</option>
                         {users.filter(u => u.role === 'mentor').map(m => (
                           <option key={m.id} value={m.id}>{m.name} (${m.hourlyRate}/hr)</option>
                         ))}
                       </select>
                     </div>
                   </div>
+
+                  {role === 'admin' && (
+                    <div>
+                      <label className="block text-sm font-semibold text-textMuted mb-2">
+                         {selectedMentor?.role === 'mentee' ? 'Confirm Mentee' : 'Assign to Mentee'}
+                      </label>
+                      <div className="relative">
+                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-textMuted" />
+                        <select 
+                          className="w-full bg-background/50 border border-white/10 rounded-xl px-11 py-3 focus:ring-2 focus:ring-primary/50 outline-none transition-all appearance-none cursor-pointer"
+                          value={formData.selectedTargetMenteeId}
+                          onChange={(e) => setFormData({...formData, selectedTargetMenteeId: parseInt(e.target.value)})}
+                        >
+                          <option value="" disabled>Select Mentee</option>
+                          {users.filter(u => u.role === 'mentee').map(m => (
+                            <option key={m.id} value={m.id}>{m.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  )}
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
