@@ -4,7 +4,7 @@ import { RoleContext } from '../App';
 import { Users, BookOpen, Target, Sparkles, Activity, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000';
+import { api } from '../api';
 
 const Home = () => {
   const { role, userId } = useContext(RoleContext);
@@ -25,8 +25,8 @@ const Home = () => {
     const fetchDashboardData = async () => {
       try {
         const [usersRes, sessionsRes] = await Promise.all([
-          axios.get(`${API_URL}/users`),
-          axios.get(`${API_URL}/sessions`)
+          axios.get(api.users),
+          axios.get(api.sessions)
         ]);
         
         const mentorsList = usersRes.data.filter(u => u.role === 'mentor');

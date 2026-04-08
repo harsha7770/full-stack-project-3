@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RoleContext } from '../App';
 import { Users, Code, Loader2, Sparkles, HandshakeIcon, Search, SlidersHorizontal, X, Calendar, Clock, Link as LinkIcon, Briefcase } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000';
+import { api } from '../api';
 
 const MentorList = () => {
   const { role, userId } = useContext(RoleContext);
@@ -35,8 +35,8 @@ const MentorList = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const endpoint = role === 'admin' ? '/users' : role === 'mentee' ? '/mentors' : '/mentees';
-      const response = await axios.get(`${API_URL}${endpoint}`);
+      const endpoint = role === 'admin' ? api.users : role === 'mentee' ? api.mentors : api.mentees;
+      const response = await axios.get(endpoint);
       setUsers(response.data);
       setFilteredUsers(response.data);
     } catch (err) {
@@ -102,7 +102,7 @@ const MentorList = () => {
          return;
       }
 
-      await axios.post(`${API_URL}/match`, payload);
+      await axios.post(api.match, payload);
       alert(`Success! Connection established with ${selectedMentor.name} and your session on ${formData.topic} is booked for ${formData.date} at ${formData.time}. Total estimated cost: $${calculateCost()}`);
       closeConnectModal();
     } catch (err) {

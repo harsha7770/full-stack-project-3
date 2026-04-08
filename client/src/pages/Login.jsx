@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RoleContext } from '../App';
 import { Lock, Mail, ArrowRight, Loader2, GraduationCap, User as UserIcon } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000';
+import { api } from '../api';
 
 const Login = ({ initialMode = 'login' }) => {
   const { setRole, setUserId, setIsAuthenticated, setUserName } = useContext(RoleContext);
@@ -43,12 +43,11 @@ const Login = ({ initialMode = 'login' }) => {
     setError('');
     
     try {
-      const endpoint = authMode === 'register' ? '/register' : '/login';
+      const endpoint = authMode === 'register' ? api.register : api.login;
       const payload = authMode === 'register' 
         ? { email, password, name, role: roleSelection }
         : { email, password };
-
-      const response = await axios.post(`${API_URL}${endpoint}`, payload);
+      const response = await axios.post(endpoint, payload);
       const user = response.data.user;
       
       setRole(user.role);

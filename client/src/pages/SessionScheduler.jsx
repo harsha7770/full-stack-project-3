@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RoleContext } from '../App';
 import { CalendarDays, Clock, Video, PlusCircle, CheckCircle } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000';
+import { api } from '../api';
 
 const SessionScheduler = () => {
   const { role, userId } = useContext(RoleContext);
@@ -18,7 +18,7 @@ const SessionScheduler = () => {
   const fetchSessions = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/sessions`);
+       const response = await axios.get(api.sessions);
       let filtered = response.data;
       
       if (role === 'mentor') {
@@ -46,7 +46,7 @@ const SessionScheduler = () => {
         menteeId: role === 'mentee' ? userId : (role === 'admin' ? newSession.menteeId : 3), // simplified demo defaults
       };
       
-      await axios.post(`${API_URL}/sessions`, payload);
+      await axios.post(api.sessions, payload);
       setNewSession({ topic: '', date: '', mentorId: '', menteeId: '' });
       fetchSessions();
       alert('Session scheduled!');

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RoleContext } from '../App';
 import { LineChart, Trophy, ArrowRight, Target, NotebookPen, ShieldAlert } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000';
+import { api } from '../api';
 
 const ProgressTracker = () => {
   const { role, userId } = useContext(RoleContext);
@@ -20,7 +20,7 @@ const ProgressTracker = () => {
 
   const fetchMentees = async () => {
     try {
-      const resp = await axios.get(`${API_URL}/mentees`);
+       const resp = await axios.get(api.mentees);
       setMentees(resp.data);
       if(resp.data.length > 0 && !selectedMentee) setSelectedMentee(resp.data[0].id);
     } catch (err) {
@@ -32,7 +32,7 @@ const ProgressTracker = () => {
     setLoading(true);
     try {
       const targetId = role === 'mentee' ? userId : selectedMentee;
-      const response = await axios.get(`${API_URL}/progress${targetId ? `?menteeId=${targetId}` : ''}`);
+      const response = await axios.get(`${api.progress}${targetId ? `?menteeId=${targetId}` : ''}`);
       setProgress(response.data);
     } catch (err) {
       console.error(err);
@@ -45,7 +45,7 @@ const ProgressTracker = () => {
     e.preventDefault();
     try {
       const targetId = role === 'mentee' ? userId : selectedMentee;
-      await axios.post(`${API_URL}/progress`, {
+      await axios.post(api.progress, {
         description: logDescription,
         menteeId: targetId
       });
