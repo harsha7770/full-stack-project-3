@@ -1,2 +1,34 @@
-services: [{type: web, name: api, buildCommand: "npm install", startCommand: "npm start", rootDir: server}]
-static_sites: [{name: app, buildCommand: "npm install && npm run build", publishDir: dist, rootDir: client}]
+services:
+  # Backend Service
+  - type: web
+    name: mentorship-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+
+# Frontend Static Site
+staticSites:
+  - name: mentorship-app
+    rootDir: client
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: mentorship-api
+          property: url
