@@ -11,7 +11,6 @@ services:
         value: production
       - key: PORT
         value: 5000
-      # You will need to fill these in the Render Dashboard after connecting
       - key: DB_HOST
         sync: false
       - key: DB_USER
@@ -21,10 +20,9 @@ services:
       - key: DB_NAME
         sync: false
 
-  # Frontend Static Site
-  - type: web
-    name: mentorship-app
-    env: static
+# Frontend Static Site
+staticSites:
+  - name: mentorship-app
     rootDir: client
     buildCommand: npm install && npm run build
     publishDir: dist
