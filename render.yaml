@@ -1,2 +1,2 @@
 services: [{type: web, name: api, buildCommand: "npm install", startCommand: "npm start", rootDir: server}]
-staticSites: [{name: app, buildCommand: "npm install && npm run build", publishDir: dist, rootDir: client}]
+static_sites: [{name: app, buildCommand: "npm install && npm run build", publishDir: dist, rootDir: client}]
