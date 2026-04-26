@@ -6,4 +6,20 @@ services:
     publishDir: dist
     envVars:
       - key: VITE_API_BASE_URL
-        value: http://localhost:8080 # Placeholder until backend is deployed
+        fromService:
+          name: mentorship-platform-backend
+          type: web
+          property: host
+
+  - type: web
+    name: mentorship-platform-backend
+    env: docker
+    rootDir: backend
+    plan: free
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
