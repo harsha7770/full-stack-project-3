@@ -25,13 +25,17 @@ const Login = ({ initialMode = 'login' }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(authMode === 'forgot') {
-       // Mock forgot password flow
-       setLoading(true);
-       setTimeout(() => {
-         setLoading(false);
-         setResetSent(true);
-       }, 1500);
-       return;
+      setLoading(true);
+      setError('');
+      try {
+        await axios.post(api.forgotPassword, { email });
+        setResetSent(true);
+      } catch (err) {
+        setError(err.response?.data?.error || 'Failed to send reset link. Please verify your email.');
+      } finally {
+        setLoading(false);
+      }
+      return;
     }
 
     if (password.length < 6) {
